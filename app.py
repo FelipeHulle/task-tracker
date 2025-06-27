@@ -34,7 +34,7 @@ class Engine:
             return saved_json
 
         
-    def _save_data_in_database(self,dados: json,path = 'data.json') -> str:
+    def _append_in_database(self,dados: json,path = 'data.json') -> str:
         """
         Save data in json database
         """
@@ -52,16 +52,27 @@ class Engine:
         with open(path,'w') as file:
             json.dump(old_data,file,indent=4)
             return 'Sucess'
+        
+    def _truncate_and_save_database(self,dados: json, path = 'data.json') -> str:
+        """
+        Truncate all database and save new data
+        """
+
+        with open(path,'w') as file:
+            json.dump(dados,file,indent=4)
+            return 'Sucess'
 
 
     def add(self,description,status='todo'):
         """
         Create new item
         """
+
+        database = self._read_database()
          
-        try:
-            id = int(self._read_database()[-1].get('id')) + 1
-        except KeyError:
+        if database:
+            id = int(database[-1].get('id')) + 1
+        else:
             id = 0
 
 
@@ -72,7 +83,7 @@ class Engine:
         data['createdAt'] = str(self._agora())
         data['updatedAt'] = str(self._agora()) 
 
-        saving = self._save_data_in_database(data)
+        saving = self._append_in_database(data)
 
         mensagem = f'Item {id} foi adicionado com sucesso.'
 
@@ -83,40 +94,24 @@ class Engine:
         Update item
         """
 
-        old_item = next((item for item in self._read_database() if item.get('id') == id),None)
-        
-        old_item['description'] = description
-        old_item['updatedAt'] = str(self._agora())
+        database = self._read_database()
 
-        return print(old_item)
+        if database:
 
-
-
-#%%
-
-engine = Engine()
-# engine._read_database()
-# engine.add('Macetar')
-# engine.update(12,'comer')
+            old_item = next((item for item in database if item.get('id') == id),None)
+            
+            old_item['description'] = description
+            old_item['updatedAt'] = str(self._agora())
 
 
+            for item in database:
+                if item['id'] == id:
+                    item['description'] = description
+                    item['updatedAt'] = str(self._agora())
+                    break
 
+            self._truncate_and_save_database(database)
+        else:
+            return 'Database nao possui nenhum item'
 
-#%%
-
-
-# id: A unique identifier for the task
-# description: A short description of the task
-# status: The status of the task (todo, in-progress, done)
-# createdAt: The date and time when the task was created
-# updatedAt: The date and time when the task was last updated
-
-# The application should run from the command line, accept user actions and inputs as arguments, and store the tasks in a JSON file.
-# The user should be able to:
-
-# Add, Update, and Delete tasks
-# Mark a task as in progress or done
-# List all tasks
-# List all tasks that are done
-# List all tasks that are not done
-# List all tasks that are in progress
+        return 'Sucesso' 
