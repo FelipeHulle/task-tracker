@@ -61,8 +61,7 @@ class Engine:
         with open(path,'w') as file:
             json.dump(dados,file,indent=4)
             return 'Sucess'
-
-
+        
     def add(self,description,status='todo'):
         """
         Create new item
@@ -75,17 +74,16 @@ class Engine:
         else:
             id = 0
 
-
         data = {}
         data['id'] = id
         data['description'] = description
         data['status'] = status
         data['createdAt'] = str(self._agora())
-        data['updatedAt'] = str(self._agora()) 
+        data['updatedAt'] = data['createdAt']
 
         saving = self._append_in_database(data)
 
-        mensagem = f'Item {id} foi adicionado com sucesso.'
+        mensagem = f'Task added successfully (ID: {id})'
 
         return mensagem
     
@@ -98,12 +96,6 @@ class Engine:
 
         if database:
 
-            old_item = next((item for item in database if item.get('id') == id),None)
-            
-            old_item['description'] = description
-            old_item['updatedAt'] = str(self._agora())
-
-
             for item in database:
                 if item['id'] == id:
                     item['description'] = description
@@ -114,4 +106,49 @@ class Engine:
         else:
             return 'Database nao possui nenhum item'
 
-        return 'Sucesso' 
+        return 'Sucesso'
+    
+    def delete(self,id):
+
+        database = self._read_database()
+
+        if database:
+
+            for item in database:
+                if item['id'] == id:
+                    database.remove(item)
+
+            self._truncate_and_save_database(database)
+        else:
+            'Database não possui nenhum item'
+
+        return 'sucesso'
+    
+    def change_status(self,id,status):
+
+        database = self._read_database()
+
+        if database:
+
+            for item in database:
+                if item['id'] == id:
+                    item['status'] = status
+
+            self._truncate_and_save_database(database)
+
+        return 'Sucesso'
+    
+    def list(self):
+        return self._read_database()
+    
+    def list_done(self):
+        done_items = [item for item in self.list() if item['status'] == 'done']
+        return done_items
+
+    def list_todo(self):
+        todo_items = [item for item in self.list() if item['status'] == 'todo']
+        return todo_items
+    
+    def list_in_progress(self):
+        in_progress_items = [item for item in self.list() if item['status'] == 'in progress']
+        return in_progress_items
