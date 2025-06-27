@@ -99,7 +99,9 @@ class Engine:
         else:
             return 'Database nao possui nenhum item'
 
-        return 'Sucesso'
+        mensagem = f'Task updated successfully (ID: {id})'
+
+        return mensagem 
     
     def delete(self,id):
 
@@ -115,7 +117,9 @@ class Engine:
         else:
             return 'Database não possui nenhum item'
 
-        return 'sucesso'
+        mensagem = f'Task deleted successfully (ID: {id})'
+
+        return mensagem 
     
     def change_status(self,id,status):
 
@@ -129,7 +133,9 @@ class Engine:
 
             self._truncate_and_save_database(database)
 
-        return 'Sucesso'
+        mensagem = f'Status changed successfully (ID: {id})'
+
+        return mensagem
     
     def list(self):
         database = self._read_database()
@@ -137,9 +143,9 @@ class Engine:
         if database:
         
             for item in database:
-                print(f"ID: {item['id']}\nDesc: {item['description']}\n")
+                print(f"\nID: {item['id']}\nDesc: {item['description']}\n")
 
-            return 'Sucesso' 
+            return 
         else:
             return 'Database não possui nenhum item'
     
@@ -151,7 +157,7 @@ class Engine:
 
             for item in database:
                 if item['status'] == description:
-                    print(f"ID: {item['id']}\nDesc: {item['description']}\n")
+                    print(f"\nID: {item['id']}\nDesc: {item['description']}\n")
             
             return 'Sucesso' 
         else:

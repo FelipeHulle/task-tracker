@@ -12,7 +12,7 @@ class Cli(cmd.Cmd):
         self.engine = Engine()
 
     def do_list(self,linha):
-        print(self.engine.list())
+        self.engine.list()
 
     def do_add(self,linha):
         description = linha
@@ -47,13 +47,13 @@ class Cli(cmd.Cmd):
         print(self.engine.change_status(args,'todo'))
     
     def do_list_done(self,linha):
-        print(self.engine.list_filter('done'))
+        self.engine.list_filter('done')
 
     def do_list_todo(self,linha):
-        print(self.engine.list_filter('todo'))
+        self.engine.list_filter('todo')
 
     def do_list_in_progress(self,linha):
-        print(self.engine.list_filter('in progress'))
+        self.engine.list_filter('in progress')
     
     
 if __name__ == '__main__':
