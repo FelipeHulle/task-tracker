@@ -44,7 +44,6 @@ class Engine:
 
         with open(path,'w') as file:
             json.dump(old_data,file,indent=4)
-            return 'Sucess'
         
     def _truncate_and_save_database(self,dados: json, path = 'data.json') -> str:
         """
@@ -53,7 +52,6 @@ class Engine:
 
         with open(path,'w') as file:
             json.dump(dados,file,indent=4)
-            return 'Sucess'
         
     def add(self,description,status='todo'):
         """
@@ -76,9 +74,7 @@ class Engine:
 
         saving = self._append_in_database(data)
 
-        mensagem = f'Task added successfully (ID: {id})'
-
-        return mensagem
+        return data
     
     def update(self,id,description):
         """
@@ -94,14 +90,19 @@ class Engine:
                     item['description'] = description
                     item['updatedAt'] = str(self._agora())
                     break
-
+            else:
+                return {
+                    'success':False,
+                    'message':'ID not found',
+                    'data':None
+                }
             self._truncate_and_save_database(database)
-        else:
-            return 'Database nao possui nenhum item'
 
-        mensagem = f'Task updated successfully (ID: {id})'
-
-        return mensagem 
+        return  {
+                    'success':True,
+                    'message':'Task updated',
+                    'data':item
+                } 
     
     def delete(self,id):
 

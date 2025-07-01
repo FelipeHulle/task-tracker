@@ -15,14 +15,35 @@ class Cli(cmd.Cmd):
         self.engine.list()
 
     def do_add(self,linha):
+
         description = linha
-        print(self.engine.add(description))
+        data = self.engine.add(description)
+        # print(data)
+        mensagem = f'Task added successfully (ID: {data.get('id')})'  
+
+        print(mensagem)
+
     
     def do_update(self,linha):
 
-        args = linha.strip().split(' ',1)
+        try:
+            id,descricao = linha.strip().split(' ',1)
+            result = self.engine.update(int(id),descricao)
+            
+            if result['success']:
+                mensagem = f'Task added successfully (ID: {result['data'].get('id')})' 
+                print(mensagem)
 
-        print(self.engine.update(int(args[0]),args[1]))
+            else:
+                print(result['message'])
+                
+        except ValueError:
+            print('Enter the ID first, followed by the description.')
+        except IndexError:
+            print('Enter two parameters')
+        except Exception as e:
+            print(f'Error: {e}')
+        
     
     def do_delete(self,linha):
 
